@@ -23,22 +23,25 @@ namespace SaiThemeColorChanger
 
         static void Main(string[] args)
         {
-            string path = args[0];
-            if (path.Length == 0)
+            string inputPath = "";
+            if(args.Length>0)
+                inputPath = args[0];
+            if (inputPath.Length == 0)
             {
                 Console.Out.WriteLine("Drag the sai2.exe file onto this exe, don't forget to make a backup of the sai executable!");
+                Console.ReadKey();
                 return;
             }
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(Path.GetDirectoryName(inputPath)))
             {
-                Console.Out.WriteLine("Not a valid path: " + path);
+                Console.Out.WriteLine("Not a valid path: " + inputPath);
+                Console.ReadKey();
                 return;
             }
             // string path = @"C:\Users\Jiji\Desktop\Sai 2\sai2.exe";
             //string path = @"C:\Users\Jiji\Desktop\Sai Dark Theme Experimentation\Automationtests\sai2.exe";
             //string path2 = Path.GetDirectoryName(path) +@"\"+ Path.GetFileNameWithoutExtension(path)+"-Dark"+ Path.GetExtension(path);
-            string outputPath = path;   //Needs to be the same as the original or Sai throws a weird error with moonrunes 
-                                        // string path2 = @"C:/colorme2.txt";
+            string outputPath = inputPath;   //Needs to be the same as the original or Sai throws a weird error with moonrunes 
 
             List<ReplacerHelper> toReplace = new List<ReplacerHelper>();
             //Hex color code -> replacement (won't work with pure white and pure black, but everything else seems fine!)
@@ -51,13 +54,18 @@ namespace SaiThemeColorChanger
             toReplace.Add(new ReplacerHelper("676767", "373737")); //Panel borders 2
             toReplace.Add(new ReplacerHelper("b0b0b0", "646464")); //Active canvas background
             toReplace.Add(new ReplacerHelper("E0E0E0", "646464")); //Tools panel background
-            Console.Out.WriteLine("Replacing stuff");
-            replaceHex(path, outputPath, toReplace);
+
+            Console.Out.WriteLine("Making a backup copy of: " + inputPath);
+            makeCopy(inputPath);
+            Console.Out.WriteLine("Replacing stuff in: " + inputPath);
+            replaceHex(inputPath, outputPath, toReplace);
             Console.Out.WriteLine("Replaced file saved to: " + outputPath);
+            Console.Out.WriteLine("Finished");
+            Console.ReadKey();
         }
 
         //Fuggin fug fug
-        //Cut the hex value into a byte array
+        //Cut the hex string -> byte array
         public static byte[] GetByteArray(string str)
         {
             return Enumerable.Range(0, str.Length)
@@ -65,6 +73,7 @@ namespace SaiThemeColorChanger
                              .Select(x => Convert.ToByte(str.Substring(x, 2), 16))
                              .ToArray();
         }
+
         public static bool findHex(byte[] sequence, int position, byte[] seeker)
         {
             if (position + seeker.Length > sequence.Length) return false;
@@ -76,6 +85,12 @@ namespace SaiThemeColorChanger
 
             return true;
         }
+        public static void makeCopy(string path)
+        {
+            string targetPath= Path.GetDirectoryName(path) + @"\" + Path.GetFileNameWithoutExtension(path) + "- BACKUP with original UI" + Path.GetExtension(path);
+            File.Copy(path, targetPath);
+            Console.Out.WriteLine("Backup copy generated in "+ targetPath);
+        } 
 
         public static void replaceHex(string targetFile, string resultFile, string searchString, string replacementString)
         {
@@ -107,6 +122,7 @@ namespace SaiThemeColorChanger
             var targetDirectory = Path.GetDirectoryName(resultFile);
             if (targetDirectory == null) return;
             Directory.CreateDirectory(targetDirectory);
+
 
             byte[] fileContent = File.ReadAllBytes(targetFile);
 
