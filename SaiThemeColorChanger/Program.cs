@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace SaiThemeColorChanger
 {
@@ -24,18 +22,24 @@ namespace SaiThemeColorChanger
         static void Main(string[] args)
         {
             string inputPath = "";
-            if(args.Length>0)
+            if (args.Length > 0)
                 inputPath = args[0];
+
             if (inputPath.Length == 0)
             {
-                Console.Out.WriteLine("Drag the sai2.exe file onto this exe, don't forget to make a backup of the sai executable!");
-                Console.ReadKey();
-                return;
+                System.Console.Out.WriteLine("Drag the sai2.exe file onto this exe, or just paste its full path into here: ");
+                inputPath = System.Console.ReadLine();
+                while (!Directory.Exists(Path.GetDirectoryName(inputPath)))
+                {
+                    System.Console.Out.WriteLine("Not a valid path: " + inputPath);
+                    inputPath = System.Console.ReadLine();
+                }
             }
+
             if (!Directory.Exists(Path.GetDirectoryName(inputPath)))
             {
-                Console.Out.WriteLine("Not a valid path: " + inputPath);
-                Console.ReadKey();
+                System.Console.Out.WriteLine("Not a valid path: " + inputPath);
+                System.Console.ReadKey();
                 return;
             }
 
@@ -56,13 +60,13 @@ namespace SaiThemeColorChanger
             toReplace.Add(new ReplacerHelper("b0b0b0", "646464")); //Active canvas background
             toReplace.Add(new ReplacerHelper("E0E0E0", "646464")); //Tools panel background
 
-            Console.Out.WriteLine("Making a backup copy of: " + inputPath);
+            System.Console.Out.WriteLine("Making a backup copy of: " + inputPath);
             makeCopy(inputPath);
-            Console.Out.WriteLine("Replacing stuff in: " + inputPath);
+            System.Console.Out.WriteLine("Replacing stuff in: " + inputPath);
             replaceHex(inputPath, outputPath, toReplace);
-            Console.Out.WriteLine("Replaced file saved to: " + outputPath);
-            Console.Out.WriteLine("Finished");
-            Console.ReadKey();
+            System.Console.Out.WriteLine("Replaced file saved to: " + outputPath);
+            System.Console.Out.WriteLine("Finished");
+            System.Console.ReadKey();
         }
 
         //Fuggin fug fug
@@ -72,7 +76,7 @@ namespace SaiThemeColorChanger
             //https://stackoverflow.com/questions/321370/how-can-i-convert-a-hex-string-to-a-byte-array
             return Enumerable.Range(0, str.Length)
                              .Where(x => x % 2 == 0)
-                             .Select(x => Convert.ToByte(str.Substring(x, 2), 16))
+                             .Select(x => System.Convert.ToByte(str.Substring(x, 2), 16))
                              .ToArray();
         }
 
@@ -82,11 +86,11 @@ namespace SaiThemeColorChanger
             if (!File.Exists(targetPath))
             {
                 File.Copy(path, targetPath);
-                Console.Out.WriteLine("Backup copy generated in " + targetPath);
+                System.Console.Out.WriteLine("Backup copy generated in " + targetPath);
             }
             else
             {
-                Console.Out.WriteLine("Backup copy already exists in " + targetPath);
+                System.Console.Out.WriteLine("Backup copy already exists in " + targetPath);
             }
         }
 
