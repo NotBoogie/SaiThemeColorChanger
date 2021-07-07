@@ -42,6 +42,7 @@ namespace SaiThemeColorChanger
             string outputPath = inputPath;   //Needs to be the same as the original or Sai throws a weird error with moonrunes 
 
             List<ReplacerHelper> toReplace = new List<ReplacerHelper>();
+            //TODO could probably make this just read out of a text file is people decide my gray is horrible
             //Hex color code -> replacement (won't work with pure white and pure black, but everything else seems fine!)
             //Basically this replaces left hex with the right hex.
             //You can swap out the values to get other colors, I haven't noticed any issues using a version with these values modified
@@ -68,10 +69,25 @@ namespace SaiThemeColorChanger
         //Cut the hex string -> byte array
         public static byte[] GetByteArray(string str)
         {
+            //https://stackoverflow.com/questions/321370/how-can-i-convert-a-hex-string-to-a-byte-array
             return Enumerable.Range(0, str.Length)
                              .Where(x => x % 2 == 0)
                              .Select(x => Convert.ToByte(str.Substring(x, 2), 16))
                              .ToArray();
+        }
+
+        public static void makeCopy(string path)
+        {
+            string targetPath = Path.GetDirectoryName(path) + @"\" + Path.GetFileNameWithoutExtension(path) + "- BACKUP with original UI" + Path.GetExtension(path);
+            if (!File.Exists(targetPath))
+            {
+                File.Copy(path, targetPath);
+                Console.Out.WriteLine("Backup copy generated in " + targetPath);
+            }
+            else
+            {
+                Console.Out.WriteLine("Backup copy already exists in " + targetPath);
+            }
         }
 
         public static bool findHex(byte[] sequence, int position, byte[] seeker)
@@ -85,19 +101,6 @@ namespace SaiThemeColorChanger
 
             return true;
         }
-        public static void makeCopy(string path)
-        {
-            string targetPath= Path.GetDirectoryName(path) + @"\" + Path.GetFileNameWithoutExtension(path) + "- BACKUP with original UI" + Path.GetExtension(path);
-            if (!File.Exists(targetPath))
-            {
-                File.Copy(path, targetPath);
-                Console.Out.WriteLine("Backup copy generated in " + targetPath);
-            }
-            else
-            {
-                Console.Out.WriteLine("Backup copy already exists in " + targetPath);
-            }
-        } 
 
         public static void replaceHex(string targetFile, string resultFile, string searchString, string replacementString)
         {
@@ -129,7 +132,6 @@ namespace SaiThemeColorChanger
             var targetDirectory = Path.GetDirectoryName(resultFile);
             if (targetDirectory == null) return;
             Directory.CreateDirectory(targetDirectory);
-
 
             byte[] fileContent = File.ReadAllBytes(targetFile);
 
