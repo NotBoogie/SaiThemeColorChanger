@@ -38,13 +38,13 @@ namespace SaiThemeColorChanger
                 Console.ReadKey();
                 return;
             }
-            // string path = @"C:\Users\Jiji\Desktop\Sai 2\sai2.exe";
-            //string path = @"C:\Users\Jiji\Desktop\Sai Dark Theme Experimentation\Automationtests\sai2.exe";
-            //string path2 = Path.GetDirectoryName(path) +@"\"+ Path.GetFileNameWithoutExtension(path)+"-Dark"+ Path.GetExtension(path);
+
             string outputPath = inputPath;   //Needs to be the same as the original or Sai throws a weird error with moonrunes 
 
             List<ReplacerHelper> toReplace = new List<ReplacerHelper>();
             //Hex color code -> replacement (won't work with pure white and pure black, but everything else seems fine!)
+            //Basically this replaces left hex with the right hex.
+            //You can swap out the values to get other colors, I haven't noticed any issues using a version with these values modified
             toReplace.Add(new ReplacerHelper("f8f8f8", "9b9b9b")); //Main panel color
             toReplace.Add(new ReplacerHelper("c0c0c0", "646464")); //Canvas background color
             toReplace.Add(new ReplacerHelper("e8e8e8", "7f7f7f")); //Scrollbar insides
@@ -88,8 +88,15 @@ namespace SaiThemeColorChanger
         public static void makeCopy(string path)
         {
             string targetPath= Path.GetDirectoryName(path) + @"\" + Path.GetFileNameWithoutExtension(path) + "- BACKUP with original UI" + Path.GetExtension(path);
-            File.Copy(path, targetPath);
-            Console.Out.WriteLine("Backup copy generated in "+ targetPath);
+            if (!File.Exists(targetPath))
+            {
+                File.Copy(path, targetPath);
+                Console.Out.WriteLine("Backup copy generated in " + targetPath);
+            }
+            else
+            {
+                Console.Out.WriteLine("Backup copy already exists in " + targetPath);
+            }
         } 
 
         public static void replaceHex(string targetFile, string resultFile, string searchString, string replacementString)
