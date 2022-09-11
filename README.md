@@ -1,9 +1,11 @@
 
+<br>
+
 <div align = center>
 
-# SaiThemeColorChanger
+# Sai Theme <br> Color Changer
 
-*Faux-Dark theme recolorer for Sai2.exe.*
+*Faux-Dark theme recolorer for Sai2.exe*
 
 <br>
 <br>
